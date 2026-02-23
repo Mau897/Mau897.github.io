@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>DUNNE | Neurona AR</title>
+  <meta name="description" content="Descarga la app Neurona AR de DUNNE y explora partes de la neurona en Realidad Aumentada." />
+
+  <style>
+    :root{
+      --bg:#0b0f14;          /* negro */
+      --card:#0f1620;        /* negro-azulado */
+      --text:#e8eef6;        /* blanco suave */
+      --muted:#a9b7c7;       /* gris azulado */
+      --orange:#ff7a00;      /* naranja */
+      --blue:#1e88ff;        /* azul */
+      --stroke: rgba(255,255,255,.10);
+      --shadow: 0 18px 60px rgba(0,0,0,.55);
+      --radius: 18px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: radial-gradient(900px 500px at 20% 0%, rgba(30,136,255,.18), transparent 55%),
+                  radial-gradient(900px 500px at 80% 10%, rgba(255,122,0,.16), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      min-height:100vh;
+    }
+
+    .wrap{
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 42px 18px 64px;
+    }
+
+    header{
+      display:flex;
+      gap:14px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom: 26px;
+    }
+
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+
+    .badge{
+      width:44px;height:44px;border-radius:14px;
+      background: linear-gradient(135deg, rgba(30,136,255,.95), rgba(255,122,0,.95));
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,.14);
+    }
+
+    h1{
+      font-size: 22px;
+      margin:0;
+      letter-spacing:.3px;
+      line-height:1.2;
+    }
+    .sub{
+      margin:2px 0 0;
+      color:var(--muted);
+      font-size: 13px;
+    }
+
+    .pill{
+      padding:8px 10px;
+      border:1px solid var(--stroke);
+      border-radius:999px;
+      color:var(--muted);
+      font-size:12px;
+      background: rgba(255,255,255,.03);
+    }
+
+    .hero{
+      display:grid;
+      grid-template-columns: 1.3fr .7fr;
+      gap:16px;
+      align-items:stretch;
+    }
+    @media (max-width: 880px){
+      .hero{grid-template-columns:1fr}
+    }
+
+    .card{
+      background: rgba(15,22,32,.85);
+      border:1px solid var(--stroke);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+      backdrop-filter: blur(8px);
+    }
+
+    .title{
+      font-size: 28px;
+      margin: 0 0 8px;
+      line-height:1.15;
+    }
+
+    .desc{
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .ctaRow{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top: 12px;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--stroke);
+      text-decoration:none;
+      color: var(--text);
+      font-weight: 650;
+      letter-spacing:.2px;
+      transition: transform .08s ease, border-color .08s ease, background .08s ease;
+      user-select:none;
+      min-width: 220px;
+    }
+    .btn:hover{ transform: translateY(-1px); border-color: rgba(255,255,255,.18); }
+    .btn:active{ transform: translateY(0px); }
+
+    .btnAndroid{
+      background: linear-gradient(135deg, rgba(255,122,0,.95), rgba(255,122,0,.65));
+    }
+    .btnIOS{
+      background: linear-gradient(135deg, rgba(30,136,255,.95), rgba(30,136,255,.65));
+    }
+    .btnGhost{
+      background: rgba(255,255,255,.03);
+      color: var(--muted);
+      min-width: 220px;
+    }
+
+    .small{
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height:1.5;
+    }
+
+    .qrBox{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+    }
+
+    .qr{
+      width: 220px;
+      max-width: 100%;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: white;
+      padding: 10px;
+    }
+
+    .steps{
+      margin-top: 14px;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 13.5px;
+      line-height:1.55;
+    }
+
+    footer{
+      margin-top: 18px;
+      color: rgba(169,183,199,.85);
+      font-size: 12px;
+      text-align:center;
+    }
+
+    .tag{
+      display:inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.03);
+      color: var(--muted);
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="badge" aria-hidden="true"></div>
+        <div>
+          <h1>DUNNE</h1>
+          <div class="sub">División Universitaria de Neuroingeniería</div>
+        </div>
+      </div>
+      <div class="pill">Neurona AR • Descarga oficial</div>
+    </header>
+
+    <section class="hero">
+      <div class="card">
+        <h2 class="title">Explora una neurona en Realidad Aumentada</h2>
+        <p class="desc">
+          Descarga la app y apunta la cámara al QR para ver el modelo 3D. Toca las zonas (soma, mielina, axón, dendritas)
+          para leer una explicación breve y didáctica.
+        </p>
+
+        <div class="ctaRow">
+          <!-- Cambia esta ruta a tu APK real -->
+          <a class="btn btnAndroid" href="./apk/NeuronaAR.apk" download>
+            Descargar para Android (APK)
+          </a>
+
+          <!-- iOS: déjalo como "Próximamente" por ahora -->
+          <a class="btn btnIOS btnGhost" href="#" onclick="alert('iOS: Próximamente. Requiere TestFlight/App Store.'); return false;">
+            iPhone / iPad (Próximamente)
+          </a>
+
+          <!-- Opcional: link a instrucciones -->
+          <a class="btn btnGhost" href="#instalacion">
+            Ver instrucciones
+          </a>
+        </div>
+
+        <div class="small" id="instalacion">
+          <span class="tag">Nota Android</span>
+          Si tu teléfono bloquea la instalación, activa <b>“Instalar apps desconocidas”</b> para tu navegador y vuelve a intentar.
+        </div>
+
+        <ol class="steps">
+          <li>Escanea el QR (o abre esta página).</li>
+          <li>Descarga e instala el APK.</li>
+          <li>Abre la app y apunta al mismo QR para ver la neurona.</li>
+          <li>Toca una zona para ver la explicación.</li>
+        </ol>
+      </div>
+
+      <div class="card qrBox">
+        <div class="tag">QR marcador</div>
+        <!-- Cambia el src al nombre real de tu archivo -->
+        <img class="qr" src="./assets/qr.png" alt="QR de Neurona AR" />
+        <div class="small">
+          Imprime este QR o ábrelo en otra pantalla. <br />
+          La app lo usa como marcador para colocar la neurona encima.
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      © DUNNE — Integrando ciencia, tecnología y mente.
+    </footer>
+  </div>
+</body>
+</html>
