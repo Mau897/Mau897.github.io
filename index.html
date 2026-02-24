@@ -1,213 +1,448 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DUNNE | Neurona AR</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>DUNNE | Neurona AR</title>
+  <meta name="description" content="Neurona AR de DUNNE: visualiza una neurona en Realidad Aumentada y toca sus partes para aprender." />
 
-<style>
-:root{
---bg:#070a0f;
---text:#eaf2ff;
---muted:#aab8cc;
---orange:#ff7a00;
---blue:#1e88ff;
---card:rgba(16,22,32,.78);
-}
+  <style>
+    :root{
+      --bg:#070a0f;
+      --text:#eaf2ff;
+      --muted:#aab8cc;
+      --orange:#ff7a00;
+      --blue:#1e88ff;
 
-body{
-margin:0;
-font-family:system-ui,Segoe UI,Roboto;
-background:
-radial-gradient(900px 500px at 20% 0%, rgba(30,136,255,.2), transparent 60%),
-radial-gradient(900px 500px at 80% 10%, rgba(255,122,0,.18), transparent 60%),
-var(--bg);
-color:var(--text);
-}
+      --card: rgba(16, 22, 32, .72);
+      --card2: rgba(12, 16, 24, .74);
+      --stroke: rgba(255,255,255,.12);
+      --stroke2: rgba(255,255,255,.08);
+      --shadow: 0 22px 80px rgba(0,0,0,.55);
+      --radius: 22px;
+    }
 
-.wrap{
-max-width:1000px;
-margin:auto;
-padding:30px 18px 70px;
-}
+    *{ box-sizing:border-box; }
 
-/* TOP BAR */
-.topbar{
-display:flex;
-align-items:center;
-justify-content:space-between;
-border:1px solid rgba(255,255,255,.1);
-border-radius:999px;
-padding:10px 16px;
-background:rgba(255,255,255,.03);
-}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color: var(--text);
+      background:
+        radial-gradient(1000px 560px at 18% 8%, rgba(30,136,255,.20), transparent 60%),
+        radial-gradient(1000px 560px at 82% 10%, rgba(255,122,0,.18), transparent 60%),
+        radial-gradient(780px 460px at 50% 95%, rgba(30,136,255,.09), transparent 60%),
+        var(--bg);
+      overflow-x:hidden;
+    }
 
-.brand{
-display:flex;
-gap:12px;
-align-items:center;
-}
+    /* Fondo neuronal sutil (SVG inline) */
+    .neuro-bg{
+      position: fixed;
+      inset:-20px;
+      pointer-events:none;
+      opacity: .24;
+      mix-blend-mode: screen;
+      filter: blur(.2px);
+      transform: translateZ(0);
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='520' height='520' viewBox='0 0 520 520'%3E%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='50%25'%3E%3Cstop offset='0%25' stop-color='%231e88ff' stop-opacity='.35'/%3E%3Cstop offset='55%25' stop-color='%23ff7a00' stop-opacity='.20'/%3E%3Cstop offset='100%25' stop-color='%23000000' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.16' stroke-width='1'%3E%3Cpath d='M60 120 C140 80, 200 160, 260 140 C330 120, 360 60, 460 70'/%3E%3Cpath d='M70 420 C160 360, 210 430, 280 400 C350 370, 380 300, 470 320'/%3E%3Cpath d='M120 70 C170 140, 80 220, 160 260 C220 290, 260 250, 300 210 C340 170, 390 170, 420 130'/%3E%3Cpath d='M120 460 C170 390, 210 330, 260 310 C310 290, 350 250, 390 210 C430 170, 450 150, 470 120'/%3E%3C/g%3E%3Cg fill='url(%23g)' opacity='.55'%3E%3Ccircle cx='120' cy='110' r='18'/%3E%3Ccircle cx='260' cy='145' r='14'/%3E%3Ccircle cx='460' cy='72' r='16'/%3E%3Ccircle cx='160' cy='260' r='13'/%3E%3Ccircle cx='300' cy='210' r='12'/%3E%3Ccircle cx='390' cy='210' r='14'/%3E%3Ccircle cx='120' cy='460' r='16'/%3E%3Ccircle cx='280' cy='400' r='14'/%3E%3Ccircle cx='470' cy='320' r='16'/%3E%3C/g%3E%3C/svg%3E");
+      background-size: 520px 520px;
+      animation: drift 16s ease-in-out infinite;
+    }
 
-.logo{
-height:42px;
-width:auto;
-object-fit:contain;
-filter:drop-shadow(0 8px 16px rgba(0,0,0,.4));
-}
+    @keyframes drift{
+      0%   { transform: translate3d(-10px, -6px, 0) scale(1); }
+      50%  { transform: translate3d(12px, 10px, 0) scale(1.02); }
+      100% { transform: translate3d(-10px, -6px, 0) scale(1); }
+    }
 
-.sub{
-font-size:12px;
-color:var(--muted);
-}
+    /* Ruido sutil para look “cine” */
+    .noise{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.07;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+      mix-blend-mode: overlay;
+    }
 
-.hero{
-display:grid;
-grid-template-columns:1.2fr .8fr;
-gap:16px;
-margin-top:18px;
-}
+    .wrap{
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 28px 18px 76px;
+      position: relative;
+      z-index: 2;
+    }
 
-@media(max-width:850px){
-.hero{grid-template-columns:1fr;}
-}
+    /* Topbar “institucional” */
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      border: 1px solid var(--stroke2);
+      background: rgba(255,255,255,.03);
+      border-radius: 999px;
+      padding: 10px 14px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 12px 46px rgba(0,0,0,.35);
+      position: relative;
+      overflow: hidden;
+    }
 
-.card{
-background:var(--card);
-border-radius:18px;
-padding:24px;
-border:1px solid rgba(255,255,255,.1);
-box-shadow:0 20px 70px rgba(0,0,0,.45);
-}
+    .topbar::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background: linear-gradient(90deg, rgba(30,136,255,.0), rgba(30,136,255,.18), rgba(255,122,0,.18), rgba(255,122,0,.0));
+      filter: blur(16px);
+      opacity:.75;
+      pointer-events:none;
+      animation: glow 6s ease-in-out infinite;
+    }
 
-.title{
-font-size:28px;
-margin:0 0 10px;
-}
+    @keyframes glow{
+      0%{ transform: translateX(-12%); opacity:.55; }
+      50%{ transform: translateX(12%); opacity:.88; }
+      100%{ transform: translateX(-12%); opacity:.55; }
+    }
 
-.desc{
-color:var(--muted);
-line-height:1.6;
-}
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      min-width: 280px;
+      position: relative;
+      z-index: 1;
+    }
 
-.btn{
-display:inline-block;
-padding:12px 16px;
-border-radius:14px;
-text-decoration:none;
-font-weight:bold;
-margin-top:14px;
-margin-right:10px;
-transition:.15s;
-}
+    .logo{
+      height: 44px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.40));
+    }
 
-.btnAndroid{
-background:linear-gradient(135deg,var(--orange),#ff9a3d);
-color:white;
-box-shadow:0 0 0 rgba(255,122,0,0);
-}
-.btnAndroid:hover{
-box-shadow:0 0 30px rgba(255,122,0,.35);
-transform:translateY(-1px);
-}
+    .brand h1{
+      margin:0;
+      font-size: 16px;
+      letter-spacing:.45px;
+      line-height:1.1;
+    }
+    .brand .sub{
+      margin: 3px 0 0;
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height:1.2;
+    }
 
-.btnIOS{
-background:linear-gradient(135deg,var(--blue),#55a5ff);
-color:white;
-}
-.btnIOS:hover{
-box-shadow:0 0 30px rgba(30,136,255,.35);
-transform:translateY(-1px);
-}
+    .chip{
+      position: relative;
+      z-index: 1;
+      font-size: 12px;
+      color: var(--muted);
+      padding: 7px 10px;
+      border: 1px solid var(--stroke2);
+      border-radius: 999px;
+      background: rgba(255,255,255,.03);
+      white-space:nowrap;
+    }
 
-.qr{
-width:240px;
-background:white;
-border-radius:14px;
-padding:10px;
-}
+    .hero{
+      margin-top: 16px;
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+    @media (max-width: 900px){
+      .hero{ grid-template-columns: 1fr; }
+      .chip{ display:none; }
+    }
 
-.steps{
-color:var(--muted);
-font-size:14px;
-line-height:1.6;
-margin-top:12px;
-}
+    .card{
+      border: 1px solid var(--stroke);
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow:hidden;
+    }
 
-footer{
-margin-top:18px;
-text-align:center;
-font-size:12px;
-color:var(--muted);
-}
-</style>
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background: linear-gradient(120deg,
+        rgba(30,136,255,.00) 20%,
+        rgba(30,136,255,.11) 45%,
+        rgba(255,122,0,.11) 65%,
+        rgba(255,122,0,.00) 90%);
+      opacity:.62;
+      filter: blur(14px);
+      pointer-events:none;
+    }
+    .card > *{ position:relative; z-index:1; }
+
+    .title{
+      margin:0 0 10px;
+      font-size: 30px;
+      line-height: 1.12;
+      letter-spacing:.2px;
+    }
+
+    .desc{
+      margin: 0 0 14px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 15.5px;
+    }
+
+    .ctaRow{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.16);
+      text-decoration:none;
+      font-weight: 800;
+      letter-spacing: .2px;
+      user-select:none;
+      transition: transform .08s ease, filter .12s ease, box-shadow .12s ease, border-color .12s ease;
+      min-width: 245px;
+      color: var(--text);
+      background: rgba(255,255,255,.04);
+      cursor:pointer;
+    }
+    .btn:hover{
+      transform: translateY(-1px);
+      border-color: rgba(255,255,255,.24);
+      filter: brightness(1.05);
+    }
+    .btn:active{ transform: translateY(0px); }
+
+    .btnAndroid{
+      background: linear-gradient(135deg, rgba(255,122,0,.95), rgba(255,122,0,.55));
+      box-shadow: 0 0 0 rgba(255,122,0,0);
+    }
+    .btnAndroid:hover{ box-shadow: 0 0 34px rgba(255,122,0,.24); }
+
+    .btnGuide{
+      background: linear-gradient(135deg, rgba(30,136,255,.95), rgba(30,136,255,.55));
+    }
+    .btnGuide:hover{ box-shadow: 0 0 34px rgba(30,136,255,.22); }
+
+    .btnGhost{
+      background: rgba(255,255,255,.03);
+      color: var(--muted);
+      font-weight: 650;
+      min-width: 200px;
+    }
+
+    .grid2{
+      margin-top: 14px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 900px){
+      .grid2{ grid-template-columns: 1fr; }
+    }
+
+    .mini{
+      border: 1px solid var(--stroke2);
+      border-radius: 16px;
+      padding: 14px;
+      background: rgba(255,255,255,.03);
+    }
+    .mini h3{
+      margin:0 0 8px;
+      font-size: 14px;
+      letter-spacing:.25px;
+    }
+    .mini p{
+      margin:0;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 13.5px;
+    }
+
+    .sep{
+      height:1px;
+      background: rgba(255,255,255,.08);
+      margin: 14px 0;
+    }
+
+    /* QR card */
+    .qrBox{
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      background: var(--card2);
+    }
+
+    .tag{
+      display:inline-block;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--stroke2);
+      color: var(--muted);
+      font-size: 12px;
+      background: rgba(255,255,255,.03);
+    }
+
+    .qr{
+      width: 250px;
+      max-width: 100%;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: white;
+      padding: 12px;
+      box-shadow: 0 12px 46px rgba(0,0,0,.40);
+    }
+
+    .steps{
+      text-align:left;
+      margin: 6px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 13.5px;
+    }
+
+    footer{
+      margin-top: 18px;
+      text-align:center;
+      color: rgba(170,184,204,.88);
+      font-size: 12.5px;
+    }
+
+    .kicker{
+      display:inline-block;
+      margin-top: 6px;
+      font-size: 12px;
+      color: rgba(234,242,255,.92);
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.10);
+      padding: 6px 10px;
+      border-radius: 999px;
+    }
+
+    .icon{
+      width:18px; height:18px; display:inline-block;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.25));
+    }
+  </style>
 </head>
 
 <body>
+  <div class="neuro-bg" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
 
-<div class="wrap">
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <img class="logo" src="./assets/Dunne_oscuros.png" alt="Logo DUNNE">
+        <div>
+          <h1>DUNNE</h1>
+          <div class="sub">División Universitaria de Neuroingeniería</div>
+        </div>
+      </div>
+      <div class="chip">Neurona AR • v1.0</div>
+    </div>
 
-<div class="topbar">
+    <section class="hero">
+      <div class="card">
+        <h2 class="title">Neurona AR: aprende tocando</h2>
+        <p class="desc">
+          Visualiza una neurona en <b>Realidad Aumentada</b> y toca sus zonas (soma, mielina, axón, dendritas) para
+          ver explicaciones didácticas. Ideal para demostración, divulgación y eventos académicos.
+        </p>
 
-<div class="brand">
-<img class="logo" src="./assets/Dunne_oscuros.png" alt="Logo DUNNE">
-<div>
-<b>DUNNE</b>
-<div class="sub">División Universitaria de Neuroingeniería</div>
-</div>
-</div>
+        <div class="ctaRow">
+          <a class="btn btnAndroid"
+             href="https://github.com/Mau897/Mau897.github.io/releases/download/v1.0/NeuronaAR5.apk">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 3v10m0 0 4-4m-4 4-4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M4 14v4a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-4" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Descargar Android (APK)
+          </a>
 
-<div>Neurona AR • v1.0</div>
+          <a class="btn btnGuide" href="./instrucciones.html">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2V5Z" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+              <path d="M18 19H6a2 2 0 0 0-2 2" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              <path d="M8 7h6M8 10h8M8 13h7" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Cómo instalar / usar
+          </a>
 
-</div>
+          <a class="btn btnGhost" href="https://github.com/Mau897/Mau897.github.io/releases/tag/v1.0">
+            Ver Release v1.0
+          </a>
+        </div>
 
-<div class="hero">
+        <div class="kicker">Tip: para demos, imprime el QR en hoja tamaño carta y pon buena luz ✨</div>
 
-<div class="card">
+        <div class="grid2">
+          <div class="mini">
+            <h3>Instalación rápida (Android)</h3>
+            <p>
+              Si Android bloquea la instalación, activa <b>“Instalar apps desconocidas”</b> para tu navegador/archivos.
+              Luego abre el APK e instala.
+            </p>
+          </div>
+          <div class="mini">
+            <h3>Uso en AR</h3>
+            <p>
+              Abre la app, apunta al QR (marcador) y toca una zona para iluminarla y leer su explicación.
+            </p>
+          </div>
+        </div>
 
-<h2 class="title">Explora una neurona en Realidad Aumentada</h2>
+        <div class="sep"></div>
 
-<p class="desc">
-Descarga la app Neurona AR desarrollada por DUNNE.
-Apunta al QR y toca las zonas de la neurona para aprender sobre soma,
-mielina, axón y dendritas de forma interactiva.
-</p>
+        <div class="mini">
+          <h3>iOS (próximamente)</h3>
+          <p>
+            Para iPhone normalmente se usa <b>TestFlight</b> o <b>App Store</b> (requiere Apple Developer Program y compilar con Xcode en Mac).
+            Por ahora Android es la ruta más rápida para eventos.
+          </p>
+        </div>
+      </div>
 
-<!-- 🔥 BOTÓN APK -->
-<a class="btn btnAndroid"
-href="https://github.com/Mau897/Mau897.github.io/releases/download/v1.0/NeuronaAR5.apk">
-Descargar APK Android
-</a>
+      <div class="card qrBox">
+        <div class="tag">QR marcador</div>
+        <img class="qr" src="./assets/qr_dunne.jpg" alt="QR marcador Neurona AR" />
+        <ol class="steps">
+          <li>Abre esta página o imprime el QR.</li>
+          <li>Descarga e instala el APK.</li>
+          <li>Abre la app y apunta al QR para ver la neurona.</li>
+          <li>Toca una zona para ver la explicación.</li>
+        </ol>
+      </div>
+    </section>
 
-<!-- 🔵 BOTÓN INSTRUCCIONES ENCENDIDO -->
-<a class="btn btnIOS" href="./instrucciones.html">
-Cómo instalar / usar
-</a>
-
-<div class="steps">
-<p><b>Instalación rápida:</b></p>
-<ul>
-<li>Permite instalar apps desconocidas en Android.</li>
-<li>Instala el APK descargado.</li>
-<li>Abre la app y apunta al QR.</li>
-</ul>
-</div>
-
-</div>
-
-<div class="card" style="text-align:center;">
-<img class="qr" src="./assets/qr_dunne.jpg">
-<p class="steps">
-Usa este QR como marcador para visualizar la neurona AR.
-</p>
-</div>
-
-</div>
-
-<footer>
-© DUNNE — Integrando ciencia, tecnología y mente.
-</footer>
-
-</div>
-
+    <footer>
+      © DUNNE — Integrando ciencia, tecnología y mente.
+    </footer>
+  </div>
 </body>
 </html>
