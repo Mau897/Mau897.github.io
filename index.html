@@ -118,12 +118,9 @@
 
     .logo{
       width: 44px;
-      height: 44px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, rgba(30,136,255,.95), rgba(255,122,0,.95));
-      border: 1px solid rgba(255,255,255,.18);
-      box-shadow: 0 14px 40px rgba(0,0,0,.45);
-      flex: 0 0 auto;
+      height: auto;
+      object-fit:contain;
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,.4));
     }
 
     .brand h1{
@@ -360,7 +357,8 @@
   <div class="wrap">
     <div class="topbar">
       <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
+        <div class="brand">
+          <img class="logo" src="./assets/logo_dunne.png" alt="Logo DUNNE">
         <div>
           <h1>DUNNE</h1>
           <div class="sub">División Universitaria de Neuroingeniería</div>
