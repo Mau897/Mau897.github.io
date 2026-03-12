@@ -7,6 +7,8 @@ Proyecto de neurona interactiva desarrollado en Unity.
 Requisitos:
 - Unity 2022.3 LTS
 - Vuforia Engine
+- Blender (modelado 3D)
+- C# (scripts de interacción)
 
 Instalación:
 1. Descargar repositorio
@@ -20,9 +22,44 @@ Controles:
 
 Link de descarga de proyecto unity 
 -https://drive.google.com/file/d/1gRO4gvStI9SrGLCbsQCDbHLxofhM9vU0/view?usp=sharing
+## Estructura del proyecto
 
-¿Qué es Vuforia?
+Assets/
+Models → modelo de neurona 3D  
+Scripts → scripts de interacción en C#  
+Scenes → escena principal  
+Materials → materiales del modelo  
 
+**Carpetas importantes**
+
+Assets/
+Contiene todos los recursos del proyecto.
+
+Scripts/
+Contiene los archivos .cs que controlan la interacción.
+
+Models/
+Contiene el modelo 3D de la neurona exportado desde Blender.
+
+Scenes/
+Contiene la escena principal de Unity.
+
+## Instalación
+
+1. Descargar el proyecto
+2. Abrir Unity Hub
+3. Seleccionar "Open Project"
+4. Elegir la carpeta del proyecto
+
+## Uso
+
+1. Ejecutar la escena principal
+2. Apuntar la cámara al marcador de imagen
+3. La neurona aparecerá en realidad aumentada
+4. Tocar partes de la neurona para interacción
+
+
+¿Que es Vuforia?
 Vuforia es un motor de realidad aumentada (AR) que funciona dentro de Unity.
 
 Permite que la cámara del dispositivo detecte una imagen o marcador y coloque un objeto 3D encima de él.
@@ -70,3 +107,9 @@ Sistema de Realidad Aumentada
 
 
 En scripts pueden encontrar la neurona en obj para su uso en blender
+
+## Autores
+
+Proyecto desarrollado por Mauricio Mendiola Rivera
+División Universitaria de Neuroingeniería
+
